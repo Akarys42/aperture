@@ -6,6 +6,12 @@ services:
       dockerfile: Dockerfile
     entrypoint: ["uvicorn", "aperture.main:app", "--reload", "--host", "0.0.0.0"]
 
+    env_file:
+      - .env
+
+    environment:
+      - BASE_URL=http://localhost:8000/
+
     volumes:
       - .:/app:rw
 
