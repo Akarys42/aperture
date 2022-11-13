@@ -1,0 +1,28 @@
+{% extends "base.jinja2" %}
+{% block content %}
+    <div class="content is-large pt-5">
+        <p><b>Congratulation!</b> Your identity is now verified. You are</p>
+        <pre>{{ decoded["identity"] }}</pre>
+        <p>on <b>{{ decoded["provider"].title() }}</b>. The associated code is:</p>
+        <pre>{{ decoded["challenge"] }}</pre>
+        <p>Feel free to share this URL with anyone who may need it. <b>Verify the code matches your expectation</b> before trusting this result.</p>
+        <p>Verification completed at {{ datetime.fromtimestamp(decoded["iat"]) }} UTC and valid until {{ datetime.fromtimestamp(decoded["exp"]) }} UTC.</p>
+        <button id="more" class="button is-medium" onclick="document.getElementById('details').classList.remove('is-hidden'); this.classList.add('is-hidden')">More details</button>
+        <div id="details" class="is-hidden">
+            <button class="button is-medium mb-2" onclick="document.getElementById('details').classList.add('is-hidden'); document.getElementById('more').classList.remove('is-hidden')">Less details</button>
+            <pre>
+Key ID: {{ kid }}
+Issuer: {{ decoded["iss"] }}
+Expiration: {{ datetime.fromtimestamp(decoded["exp"]) }}
+Issued At: {{ datetime.fromtimestamp(decoded["iat"]) }}
+Not Before: {{ datetime.fromtimestamp(decoded["nbf"]) }}
+Identity: {{ decoded["identity"] }}
+Provider: {{ decoded["provider"] }}
+Challenge: {{ decoded["challenge"] }}
+            </pre>
+            <p>Full token:</p>
+            <pre>{{ token }}</pre>
+            <p>Signing key available on the <a href="/rsa.pub">/rsa.pub</a> endpoint.</p>
+        </div>
+    </div>
+{% endblock %}

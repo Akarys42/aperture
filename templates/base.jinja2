@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Aperture{% endblock %}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=allerta-stencil:400" rel="stylesheet" />
+    </head>
+    <body>
+        <div id="main-content">
+            <h1 class="page-title is-clickable" onclick="location='/'">Aperture</h1>
+            <h3 class="subtitle is-3 has-text-centered">Identity verification</h3>
+            {% block content %}{% endblock %}
+        </div>
+        <footer class="footer">
+            <div class="content has-text-centered">
+                <p>
+                    <strong>Aperture</strong> by Starchild Systems. The source code is licensed
+                    <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.<br>
+                    Available on <a href="https://github.com/akarys42/aperture">GitHub</a>.
+                </p>
+            </div>
+        </footer>
+    </body>
+</html>

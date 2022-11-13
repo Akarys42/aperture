@@ -1,0 +1,32 @@
+#main-content {
+    max-width: 80%;
+    margin: 0 auto;
+    margin-bottom: 0;
+    min-height: 95vh;
+}
+
+.page-title {
+    font-family: 'Allerta Stencil', sans-serif;
+    font-size: 4.5em;
+    text-align: center;
+    margin-top: 2%;
+}
+
+.provider {
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.is-width-100 {
+    width: 100%;
+}
+
+.card-discord {
+    background-color: #5865F2;
+}
+
+.grid-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 1rem;
+}

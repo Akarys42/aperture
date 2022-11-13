@@ -1,0 +1,11 @@
+{% extends "base.jinja2" %}
+{% block content %}
+    <div class="content is-large pt-5">
+        <p>Your challenge code is:</p>
+        <pre>{{ challenge }}</pre>
+        <p>The URL for this challenge is:</p>
+        <pre>{{ challenge_url }}</pre>
+        <p>Write down the code and share the URL with the user you want to verify.</p>
+        <p>Once they'll complete the verification, they will get a new URL proving the ownership of their account.</p>
+    </div>
+{% endblock %}

@@ -21,6 +21,12 @@ class BaseProvider(abc.ABC):
         """The unique identifier of this provider."""
         raise NotImplementedError
 
+    @property
+    @abc.abstractmethod
+    def brand_filename(self) -> str:
+        """The filename of the brand logo of this provider."""
+        raise NotImplementedError
+
     @abc.abstractmethod
     def start_challenge(self, challenge: str, request: Request) -> Response:
         """

@@ -32,6 +32,7 @@ class DiscordProvider(BaseProvider):
     """
 
     identifier = "discord"
+    brand_filename = "discord-logo-white.svg"
 
     def __init__(self, client_id: str, client_secret: str, base_url: str) -> None:
         self.client_id = client_id
