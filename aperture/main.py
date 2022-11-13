@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 import jwt
 from cryptography.hazmat.primitives import serialization
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
@@ -55,7 +55,7 @@ async def root(request: Request) -> Response:
 async def start(provider: str, challenge: str, request: Request) -> Response:
     """Start the authentication process."""
     if provider not in providers:
-        return {"message": "Unknown provider"}
+        raise HTTPException(status_code=404, detail="Provider not found")
 
     logger.info(f"Starting challenge {challenge!r} for provider {provider!r}")
 
@@ -63,10 +63,10 @@ async def start(provider: str, challenge: str, request: Request) -> Response:
 
 
 @app.get("/verify/{provider:str}")
-async def verify(provider: str, request: Request) -> Response | dict:
+async def verify(provider: str, request: Request) -> Response:
     """Verify the authentication process and emit a token if it succeeded."""
     if provider not in providers:
-        return {"message": "Unknown provider"}
+        raise HTTPException(status_code=404, detail="Provider not found")
 
     logger.info(f"Verifying challenge for provider {provider!r}")
 
@@ -78,7 +78,9 @@ async def verify(provider: str, request: Request) -> Response | dict:
         return Response(status_code=307, headers={"Location": f"/success?token={token}"})
     else:
         logger.info(f"Challenge failed for provider {provider!r}: {status.reason}")
-        return {"message": "Challenge failed", "provider": provider, "reason": status.reason}
+        return templates.TemplateResponse(
+            "failure.jinja2", {"request": request, "reason": status.reason, "is_user_error": False}
+        )
 
 
 @app.get("/generate/{provider:str}")
@@ -96,7 +98,7 @@ async def generate(provider: str) -> Response:
 async def challenge(provider: str, challenge: str, request: Request) -> Response:
     """Returns an HTML page explaining the challenge."""
     if provider not in providers:
-        return {"message": "Unknown provider"}
+        raise HTTPException(status_code=404, detail="Provider not found")
 
     return templates.TemplateResponse(
         "challenge.jinja2",
@@ -110,18 +112,40 @@ async def challenge(provider: str, challenge: str, request: Request) -> Response
 
 
 @app.get("/success")
-async def success(request: Request) -> Response | dict:
+async def success(request: Request) -> Response:
     """Returns an HTML page verifying and showcasing the token details."""
     token = request.query_params.get("token", None)
+    error = None
+    is_user_error = False
 
     if token is None:
-        return {"message": "Missing token"}
+        error = "Missing token"
 
-    try:
-        decoded = jwt.decode(token, public_key, algorithms=["RS256"])
-        kid = jwt.get_unverified_header(token)["kid"]
-    except jwt.exceptions.PyJWTError:
-        return {"message": "Invalid token"}
+    if not error:
+        try:
+            decoded = jwt.decode(token, public_key, algorithms=["RS256"])
+            kid = jwt.get_unverified_header(token)["kid"]
+
+        except jwt.exceptions.InvalidSignatureError:
+            error = "Invalid token signature"
+        except jwt.exceptions.DecodeError:
+            error = "Error decoding token"
+        except jwt.exceptions.ExpiredSignatureError:
+            error = (
+                f"Token expired. For security reasons, "
+                f"tokens are only valid for {TOKEN_DURATION.days} days."
+            )
+            is_user_error = True
+        except jwt.exceptions.ImmatureSignatureError:
+            error = "Token not yet valid. Do you have a time machine?"
+            is_user_error = True
+        except jwt.exceptions.PyJWTError:
+            error = "Error decoding token"
+
+    if error:
+        return templates.TemplateResponse(
+            "failure.jinja2", {"request": request, "reason": error, "is_user_error": is_user_error}
+        )
 
     return templates.TemplateResponse(
         "success.jinja2",

@@ -85,7 +85,7 @@ class DiscordProvider(BaseProvider):
 
         r = requests.post(EXCHANGE_ENDPOINT, data=data, headers=headers)
         if r.status_code != 200 or "access_token" not in r.json():
-            return FailedChallenge("Failed to verify code with Discord.")
+            return FailedChallenge(f"Failed to verify code with Discord ({r.status_code}).")
 
         access_token = r.json()["access_token"]
 
@@ -94,7 +94,7 @@ class DiscordProvider(BaseProvider):
 
         if r.status_code != 200 or "id" not in r.json():
             logger.warning(f"Failed to get user info from Discord ({r.status_code}): {r.text}")
-            return FailedChallenge("Failed to get user info from Discord.")
+            return FailedChallenge(f"Failed to get user info from Discord ({r.status_code}).")
 
         return VerifiedChallenge(r.json()["id"], challenge)
 

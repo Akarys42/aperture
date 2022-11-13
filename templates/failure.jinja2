@@ -1,0 +1,12 @@
+{% extends "base.jinja2" %}
+{% block content %}
+<div class="content is-large is-size-5-mobile pt-5">
+    <p><b>Verification failed:</b></p>
+    <pre>{{ reason }}</pre>
+    {% if not is_user_error %}
+    <p>Please try again. If the problem persist, please <a
+            href="https://github.com/Akarys42/aperture/issues/new">open an issue</a>.</p>
+    {% endif %}
+</div>
+<div class="block"></div>
+{% endblock %}
