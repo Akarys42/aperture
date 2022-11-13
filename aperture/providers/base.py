@@ -5,7 +5,6 @@ from typing import Optional
 from starlette.requests import Request
 from starlette.responses import Response
 
-
 VerifiedChallenge = namedtuple("VerifiedChallenge", ["identity", "challenge"])
 FailedChallenge = namedtuple("FailedChallenge", ["reason"])
 
@@ -45,8 +44,8 @@ class BaseProvider(abc.ABC):
         """
         Verifies a challenge with the provider.
 
-        The provider shall verify the challenge and return a `VerifiedChallenge` if the challenge was
-        successful, else a `FailedChallenge` with an appropriate reason.
+        The provider shall verify the challenge and return a `VerifiedChallenge`
+        if the challenge was successful, else a `FailedChallenge` with an appropriate reason.
         """
         raise NotImplementedError
 

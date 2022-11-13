@@ -1,12 +1,12 @@
 import hashlib
+import logging
 import os
 import urllib.parse
 from typing import Optional
-import logging
 
+import requests
 from starlette.requests import Request
 from starlette.responses import Response
-import requests
 
 from aperture.providers.base import (
     BaseProvider,
@@ -40,6 +40,7 @@ class DiscordProvider(BaseProvider):
         self.verify_url = f"{base_url.strip('/')}/verify/discord/"
 
     def start_challenge(self, challenge: str, request: Request) -> Response:
+        """Redirects the user to the Discord OAuth page with only the identify scope."""
         query = urllib.parse.urlencode(
             {
                 "response_type": "code",
@@ -59,6 +60,7 @@ class DiscordProvider(BaseProvider):
         )
 
     def verify_challenge(self, request: Request) -> ChallengeResponse:
+        """Verifies the challenge by exchanging the code and querying the UID."""
         challenge = request.cookies.get("challenge", None)
 
         if challenge is None:
@@ -102,6 +104,7 @@ class DiscordProvider(BaseProvider):
 
     @classmethod
     def new(cls) -> Optional["BaseProvider"]:
+        """Creates a new instance of the provider if the environment variables are set."""
         required_env = ["DISCORD_ID", "DISCORD_SECRET"]
 
         if not all(env in os.environ for env in required_env):

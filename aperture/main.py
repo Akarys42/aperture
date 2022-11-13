@@ -1,20 +1,19 @@
 import logging
 import os
-from datetime import timedelta, datetime
-from pathlib import Path
-import string
 import random
+import string
+from datetime import datetime, timedelta
 
+import jwt
 from cryptography.hazmat.primitives import serialization
 from fastapi import FastAPI
-from starlette.requests import Request
-import jwt
-from starlette.responses import Response
-from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.requests import Request
+from starlette.responses import Response
 
 from aperture.providers.base import BaseProvider, VerifiedChallenge
-from aperture.utils import filter_none, calculate_key_fingerprint
+from aperture.utils import calculate_key_fingerprint, filter_none
 
 TOKEN_DURATION = timedelta(days=10)
 BASE_URL = os.environ.get("BASE_URL")
@@ -48,11 +47,13 @@ logger.info(f"Using key {fingerprint}")
 
 @app.get("/")
 async def root(request: Request) -> Response:
+    """Return the service index."""
     return templates.TemplateResponse("index.jinja2", {"request": request, "providers": providers})
 
 
 @app.get("/start/{provider:str}/{challenge:str}")
-async def start(provider: str, challenge: str, request: Request):
+async def start(provider: str, challenge: str, request: Request) -> Response:
+    """Start the authentication process."""
     if provider not in providers:
         return {"message": "Unknown provider"}
 
@@ -62,7 +63,8 @@ async def start(provider: str, challenge: str, request: Request):
 
 
 @app.get("/verify/{provider:str}")
-async def verify(provider: str, request: Request):
+async def verify(provider: str, request: Request) -> Response | dict:
+    """Verify the authentication process and emit a token if it succeeded."""
     if provider not in providers:
         return {"message": "Unknown provider"}
 
@@ -76,11 +78,12 @@ async def verify(provider: str, request: Request):
         return Response(status_code=307, headers={"Location": f"/success?token={token}"})
     else:
         logger.info(f"Challenge failed for provider {provider!r}: {status.reason}")
-        return {"message": f"Challenge failed", "provider": provider, "reason": status.reason}
+        return {"message": "Challenge failed", "provider": provider, "reason": status.reason}
 
 
 @app.get("/generate/{provider:str}")
-async def generate(provider: str, request: Request):
+async def generate(provider: str) -> Response:
+    """Redirect to a challenge page with a random challenge string."""
     character_set = string.ascii_letters + string.digits
     random_challenge = "".join(random.choices(character_set, k=CHALLENGE_LENGTH))
 
@@ -90,7 +93,8 @@ async def generate(provider: str, request: Request):
 
 
 @app.get("/challenge/{provider:str}/{challenge:str}")
-async def challenge(provider: str, challenge: str, request: Request):
+async def challenge(provider: str, challenge: str, request: Request) -> Response:
+    """Returns an HTML page explaining the challenge."""
     if provider not in providers:
         return {"message": "Unknown provider"}
 
@@ -106,7 +110,8 @@ async def challenge(provider: str, challenge: str, request: Request):
 
 
 @app.get("/success")
-async def success(request: Request):
+async def success(request: Request) -> Response | dict:
+    """Returns an HTML page verifying and showcasing the token details."""
     token = request.query_params.get("token", None)
 
     if token is None:
@@ -125,7 +130,8 @@ async def success(request: Request):
 
 
 @app.get("/rsa.pub")
-async def get_public_key():
+async def get_public_key() -> Response:
+    """Returns the public key used to sign the tokens in PEM format."""
     return Response(
         public_key.public_bytes(
             serialization.Encoding.PEM, serialization.PublicFormat.PKCS1
@@ -134,6 +140,7 @@ async def get_public_key():
 
 
 def create_token(identity: str, challenge: str, provider: str) -> str:
+    """Create a signed token with the given identity and challenge."""
     data = {
         "exp": datetime.utcnow() + TOKEN_DURATION,
         "nbf": datetime.utcnow(),

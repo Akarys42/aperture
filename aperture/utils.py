@@ -1,7 +1,7 @@
-import hashlib
-from typing import TypeVar, Iterable, Optional
-import re
 import base64
+import hashlib
+import re
+from typing import Iterable, Optional, TypeVar
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
@@ -10,10 +10,16 @@ T = TypeVar("T")
 
 
 def filter_none(i: Iterable[Optional[T]]) -> Iterable[T]:
+    """Filter out None values from an iterable."""
     return filter(lambda x: x is not None, i)
 
 
 def calculate_key_fingerprint(key: RSAPublicKey) -> str:
+    """
+    Calculate the fingerprint of a public key.
+
+    The format is similar to what you'd expect from OpenSSH.
+    """
     openssh_content = key.public_bytes(
         serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH
     ).decode("utf-8")
