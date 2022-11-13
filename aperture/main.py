@@ -32,9 +32,13 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 
 logger.info(f"Available providers: {', '.join(providers.keys())}")
 
-key_directory = Path("./dev-keys" if os.getenv("USE_DEV_KEYS", None) else "/var/aperture/keys")
-with open(key_directory / "rsa.private", "rb") as f:
-    private_key = serialization.load_pem_private_key(f.read(), password=None)
+if os.getenv("USE_DEV_KEYS", None):
+    with open("./dev-keys/rsa.private", "rb") as f:
+        private_key = serialization.load_pem_private_key(f.read(), password=None)
+else:
+    private_key = serialization.load_pem_private_key(
+        os.getenv("RSA_KEY").encode("utf-8"), password=None
+    )
 
 public_key = private_key.public_key()
 fingerprint = calculate_key_fingerprint(public_key)
