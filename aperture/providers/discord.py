@@ -101,7 +101,7 @@ class DiscordProvider(BaseProvider):
 
     @classmethod
     def new(cls) -> Optional["BaseProvider"]:
-        required_env = ["DISCORD_ID", "DISCORD_SECRET", "BASE_URL"]
+        required_env = ["DISCORD_ID", "DISCORD_SECRET"]
 
         if not all(env in os.environ for env in required_env):
             return None
