@@ -1,6 +1,6 @@
 {% extends "base.jinja2" %}
 {% block content %}
-    <div class="content is-large pt-5">
+    <div class="content is-large is-size-5-mobile pt-5">
         <p><b>Congratulation!</b> Your identity is now verified. You are</p>
         <pre>{{ decoded["identity"] }}</pre>
         <p>on <b>{{ decoded["provider"].title() }}</b>. The associated code is:</p>
