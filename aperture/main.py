@@ -18,6 +18,7 @@ from aperture.utils import calculate_key_fingerprint, filter_none
 TOKEN_DURATION = timedelta(days=10)
 BASE_URL = os.environ.get("BASE_URL")
 CHALLENGE_LENGTH = 12
+CHALLENGE_LENGTH_LIMIT = 256
 
 app = FastAPI(openapi_url=None, docs_url=None, redoc_url=None)
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -63,6 +64,9 @@ async def start(provider: str, challenge: str, request: Request) -> Response:
     if provider not in providers:
         raise HTTPException(status_code=404, detail="Provider not found")
 
+    if len(challenge) > CHALLENGE_LENGTH_LIMIT:
+        raise HTTPException(status_code=400, detail="Challenge too long")
+
     logger.info(f"Starting challenge {challenge!r} for provider {provider!r}")
 
     return providers[provider].start_challenge(challenge, request)
@@ -105,6 +109,9 @@ async def challenge(provider: str, challenge: str, request: Request) -> Response
     """Returns an HTML page explaining the challenge."""
     if provider not in providers:
         raise HTTPException(status_code=404, detail="Provider not found")
+
+    if len(challenge) > CHALLENGE_LENGTH_LIMIT:
+        raise HTTPException(status_code=400, detail="Challenge too long")
 
     return templates.TemplateResponse(
         "challenge.jinja2",
