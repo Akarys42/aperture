@@ -1,4 +1,7 @@
 {% extends "base.jinja2" %}
+{% block title %}Aperture: Your {{ human_provider }} identity{% endblock %}
+{% block description %}Your identity on {{ human_provider }} is now verified as {{ decoded["identity"] }}. Feel free to share this link to people who may need it.{% endblock %}
+
 {% block content %}
     <div class="content is-large is-size-5-mobile pt-5">
         <p><b>Congratulation!</b> Your identity is now verified. You are</p>

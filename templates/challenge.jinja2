@@ -1,4 +1,7 @@
 {% extends "base.jinja2" %}
+{% block title %}Aperture: {{ provider.human_identifier }}{% endblock %}
+{% block description %}Your identity challenge for {{ provider.human_identifier }}.{% endblock %}
+
 {% block content %}
     <div class="content is-large is-size-5-mobile pt-5">
         <p>Your challenge code for <b>{{ provider.human_identifier }}</b> is:</p>
