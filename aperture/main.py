@@ -34,10 +34,16 @@ logger.info(f"Available providers: {', '.join(providers.keys())}")
 if os.getenv("USE_DEV_KEYS", None):
     with open("./dev-keys/rsa.private", "rb") as f:
         private_key = serialization.load_pem_private_key(f.read(), password=None)
+        logger.warning("Development key loaded. Do *not* use this in prod.")
 else:
     private_key = serialization.load_pem_private_key(
         os.getenv("RSA_KEY").encode("utf-8"), password=None
     )
+
+BASE_URL = os.getenv("BASE_URL", None)
+if not BASE_URL:
+    logging.error("BASE_URL environment variable isn't set.")
+    exit(1)
 
 public_key = private_key.public_key()
 fingerprint = calculate_key_fingerprint(public_key)
