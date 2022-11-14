@@ -160,9 +160,21 @@ async def success(request: Request) -> Response:
             "failure.jinja2", {"request": request, "reason": error, "is_user_error": is_user_error}
         )
 
+    if decoded["provider"] in providers:
+        human_provider = providers[decoded["provider"]].human_identifier
+    else:
+        human_provider = decoded["provider"].title()
+
     return templates.TemplateResponse(
         "success.jinja2",
-        {"request": request, "token": token, "decoded": decoded, "datetime": datetime, "kid": kid},
+        {
+            "request": request,
+            "token": token,
+            "decoded": decoded,
+            "datetime": datetime,
+            "kid": kid,
+            "human_provider": human_provider,
+        },
     )
 
 

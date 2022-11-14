@@ -3,7 +3,7 @@
     <div class="content is-large is-size-5-mobile pt-5">
         <p><b>Congratulation!</b> Your identity is now verified. You are</p>
         <pre>{{ decoded["identity"] }}</pre>
-        <p>on <b>{{ decoded["provider"].title() }}</b>. The associated code is:</p>
+        <p>on <b>{{ human_provider }}</b>. The associated code is:</p>
         <pre>{{ decoded["challenge"] }}</pre>
         <p>Feel free to share this URL with anyone who may need it. <b>Verify the code matches your expectation</b> before trusting this result.</p>
         <p>Verification completed at {{ datetime.fromtimestamp(decoded["iat"]) }} UTC and valid until {{ datetime.fromtimestamp(decoded["exp"]) }} UTC.</p>

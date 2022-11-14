@@ -21,6 +21,15 @@ class BaseProvider(abc.ABC):
         raise NotImplementedError
 
     @property
+    def human_identifier(self) -> str:
+        """
+        The human readable identifier of this provider.
+
+        Return the capitalized machine identifier by default.
+        """
+        return self.identifier.title()
+
+    @property
     @abc.abstractmethod
     def brand_filename(self) -> str:
         """The filename of the brand logo of this provider."""

@@ -15,40 +15,39 @@ from aperture.providers.base import (
     VerifiedChallenge,
 )
 
-DISCORD_BASE = "https://discord.com/api/v10"
-OAUTH_ENDPOINT = DISCORD_BASE + "/oauth2/authorize"
-EXCHANGE_ENDPOINT = DISCORD_BASE + "/oauth2/token"
-ME_ENDPOINT = DISCORD_BASE + "/users/@me"
+OAUTH_ENDPOINT = "https://github.com/login/oauth/authorize"
+EXCHANGE_ENDPOINT = "https://github.com/login/oauth/access_token"
+USER_ENDPOINT = "https://api.github.com/user"
 
 
 logger = logging.getLogger(__name__)
 
 
-class DiscordProvider(BaseProvider):
+class GithubProvider(BaseProvider):
     """
-    Class implementing Discord OAuth.
+    Class implementing Github OAuth.
 
-    The user name, discriminator and ID is the returned identity
+    The user name and ID is the returned identity
     """
 
-    identifier = "discord"
-    brand_filename = "discord-logo-white.svg"
+    identifier = "github"
+    human_identifier = "GitHub"
+    brand_filename = "GitHub_Logo_White.png"
 
     def __init__(self, client_id: str, client_secret: str, base_url: str) -> None:
         self.client_id = client_id
         self.client_secret = client_secret
-        self.verify_url = f"{base_url.strip('/')}/verify/discord/"
+        self.verify_url = f"{base_url.strip('/')}/verify/github/"
 
     def start_challenge(self, challenge: str, request: Request) -> Response:
         """Redirects the user to the Discord OAuth page with only the identify scope."""
         query = urllib.parse.urlencode(
             {
-                "response_type": "code",
                 "client_id": self.client_id,
-                "scope": "identify",
+                "scope": "",
                 "state": self._calculate_state(challenge),
                 "redirect_uri": self.verify_url,
-                "prompt": "consent",
+                "allow_signup": "false",
             }
         )
 
@@ -77,27 +76,29 @@ class DiscordProvider(BaseProvider):
         data = {
             "client_id": self.client_id,
             "client_secret": self.client_secret,
-            "grant_type": "authorization_code",
             "code": code,
             "redirect_uri": self.verify_url,
         }
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+        }
 
         r = requests.post(EXCHANGE_ENDPOINT, data=data, headers=headers)
         if r.status_code != 200 or "access_token" not in r.json():
-            return FailedChallenge(f"Failed to verify code with Discord ({r.status_code}).")
+            return FailedChallenge(f"Failed to verify code with GitHub ({r.status_code}): {r.text}")
 
         access_token = r.json()["access_token"]
 
         headers = {"Authorization": f"Bearer {access_token}"}
-        r = requests.get(ME_ENDPOINT, headers=headers)
+        r = requests.get(USER_ENDPOINT, headers=headers)
 
         if r.status_code != 200 or "id" not in r.json():
-            logger.warning(f"Failed to get user info from Discord ({r.status_code}): {r.text}")
-            return FailedChallenge(f"Failed to get user info from Discord ({r.status_code}).")
+            logger.warning(f"Failed to get user info from GitHub ({r.status_code}): {r.text}")
+            return FailedChallenge(f"Failed to get user info from GitHub ({r.status_code}).")
 
         data = r.json()
-        identity = f"{data['username']}#{data['discriminator']} ({data['id']})"
+        identity = f"{data['login']} ({data['id']})"
 
         return VerifiedChallenge(identity, challenge)
 
@@ -108,9 +109,9 @@ class DiscordProvider(BaseProvider):
     @classmethod
     def new(cls) -> Optional["BaseProvider"]:
         """Creates a new instance of the provider if the environment variables are set."""
-        required_env = ["DISCORD_ID", "DISCORD_SECRET"]
+        required_env = ["GITHUB_ID", "GITHUB_SECRET"]
 
         if not all(env in os.environ for env in required_env):
             return None
 
-        return cls(os.getenv("DISCORD_ID"), os.getenv("DISCORD_SECRET"), os.getenv("BASE_URL"))
+        return cls(os.getenv("GITHUB_ID"), os.getenv("GITHUB_SECRET"), os.getenv("BASE_URL"))

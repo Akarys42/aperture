@@ -25,6 +25,10 @@
     background-color: #5865F2;
 }
 
+.card-github {
+    background-color: black;
+}
+
 .grid-wrapper {
     display: grid;
     grid-gap: 1rem;
