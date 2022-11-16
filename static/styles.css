@@ -32,6 +32,7 @@
 .grid-wrapper {
     display: grid;
     grid-gap: 1rem;
+    grid-auto-rows: 1fr;
 }
 
 @media only screen and (min-width: 768px) {
