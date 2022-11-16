@@ -1,0 +1,46 @@
+{% extends "base.jinja2" %}
+{% block title %}Aperture: Privacy police{% endblock %}
+{% block description %}The privacy police for the Aperture service.{% endblock %}
+
+{% block content %}
+    <div class="content is-medium pt-5">
+        <h1 class="title is-2">Foreword</h1>
+        <p>We value the privacy of our users.</p>
+        <p>
+        When you verify with Aperture, we request your personal details from the provider you've chosen (see breakdown below),
+        encode them into a token and send it back to your browser. Your data is never saved on our servers and only exists in temporary memory.
+        </p>
+        <p>The token you receive contains your personal details which can be viewed by anyone you share the secure URL to.</p>
+        <p>We need to collect those information to provide you with a proof of your identity.</p>
+
+        <h1 class="title is-2">Data requested per provider</h1>
+        <p>Underneath you can find the piece of information we request from each provider. This data is never saved on our servers.</p>
+
+        <h2 class="title is-3">Discord</h2>
+        <ul>
+            <li>Account ID</li>
+            <li>Username</li>
+            <li>Discriminator</li>
+        </ul>
+
+        <h2 class="title is-3">GitHub</h2>
+        <ul>
+            <li>Account ID</li>
+            <li>Username</li>
+        </ul>
+
+        <h2 class="title is-3">Google</h2>
+        <ul>
+            <li>Full name</li>
+            <li>Email</li>
+        </ul>
+
+        <h1 class="title is-2">Data Subject Request</h1>
+        <p>You have a right to request, ask for correction and ask for deletion of all data we have on you.
+        You can do so by sending an email to <a href="mailto:privacy@starchild.systems">privacy@starchild.systems</a>.
+        </p>
+
+        <h1 class="title is-2">Contact</h1>
+        <p>If you have any questions or concerns, please contact us at <a href="mailto:privacy@starchild.systems">privacy@starchild.systems</a>.</p>
+    </div>
+{% endblock %}

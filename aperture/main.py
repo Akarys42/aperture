@@ -188,6 +188,18 @@ async def get_public_key() -> Response:
     )
 
 
+@app.get("/privacy")
+async def privacy(request: Request) -> Response:
+    """Returns the privacy policy."""
+    return templates.TemplateResponse("privacy.jinja2", {"request": request})
+
+
+@app.get("/terms")
+async def terms(request: Request) -> Response:
+    """Returns the terms of service."""
+    return templates.TemplateResponse("terms.jinja2", {"request": request})
+
+
 def create_token(identity: str, challenge: str, provider: str) -> str:
     """Create a signed token with the given identity and challenge."""
     data = {
