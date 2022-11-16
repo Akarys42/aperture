@@ -3,3 +3,4 @@
 from .discord import DiscordProvider
 from .github import GithubProvider
 from .google import GoogleProvider
+from .reddit import RedditProvider
