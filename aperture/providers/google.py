@@ -32,6 +32,7 @@ class GoogleProvider(BaseProvider):
 
     identifier = "google"
     brand_filename = "google.png"
+    data_requested = ["Full name", "Email address"]
 
     def __init__(self, client_id: str, client_secret: str, base_url: str) -> None:
         self.client_id = client_id
@@ -39,7 +40,7 @@ class GoogleProvider(BaseProvider):
         self.redirect_uri = f"{base_url.strip('/')}/verify/google/"
 
     def start_challenge(self, challenge: str, request: Request) -> Response:
-        """Redirects the user to the Discord OAuth page with only the identify scope."""
+        """Redirects the user to the Google OAuth page with only the identify scope."""
         query = urllib.parse.urlencode(
             {
                 "client_id": self.client_id,

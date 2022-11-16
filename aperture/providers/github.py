@@ -33,6 +33,7 @@ class GithubProvider(BaseProvider):
     identifier = "github"
     human_identifier = "GitHub"
     brand_filename = "GitHub_Logo_White.png"
+    data_requested = ["Account ID", "Username"]
 
     def __init__(self, client_id: str, client_secret: str, base_url: str) -> None:
         self.client_id = client_id

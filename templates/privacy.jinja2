@@ -1,6 +1,6 @@
 {% extends "base.jinja2" %}
-{% block title %}Aperture: Privacy police{% endblock %}
-{% block description %}The privacy police for the Aperture service.{% endblock %}
+{% block title %}Aperture: Privacy policy{% endblock %}
+{% block description %}The privacy policy for the Aperture service.{% endblock %}
 
 {% block content %}
     <div class="content is-medium pt-5">
@@ -16,24 +16,14 @@
         <h1 class="title is-2">Data requested per provider</h1>
         <p>Underneath you can find the piece of information we request from each provider. This data is never saved on our servers.</p>
 
-        <h2 class="title is-3">Discord</h2>
+        {% for provider in providers %}
+        <h2 class="title is-3">{{ provider.human_identifier }}</h2>
         <ul>
-            <li>Account ID</li>
-            <li>Username</li>
-            <li>Discriminator</li>
+            {% for data in provider.data_requested %}
+            <li>{{ data }}</li>
+            {% endfor %}
         </ul>
-
-        <h2 class="title is-3">GitHub</h2>
-        <ul>
-            <li>Account ID</li>
-            <li>Username</li>
-        </ul>
-
-        <h2 class="title is-3">Google</h2>
-        <ul>
-            <li>Full name</li>
-            <li>Email</li>
-        </ul>
+        {% endfor %}
 
         <h1 class="title is-2">Data Subject Request</h1>
         <p>You have a right to request, ask for correction and ask for deletion of all data we have on you.

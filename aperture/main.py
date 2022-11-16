@@ -191,7 +191,9 @@ async def get_public_key() -> Response:
 @app.get("/privacy")
 async def privacy(request: Request) -> Response:
     """Returns the privacy policy."""
-    return templates.TemplateResponse("privacy.jinja2", {"request": request})
+    return templates.TemplateResponse(
+        "privacy.jinja2", {"request": request, "providers": providers.values()}
+    )
 
 
 @app.get("/terms")

@@ -31,6 +31,12 @@ class BaseProvider(abc.ABC):
 
     @property
     @abc.abstractmethod
+    def data_requested(self) -> list[str]:
+        """The data requested from the provider as displayed in the privacy policy."""
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
     def brand_filename(self) -> str:
         """The filename of the brand logo of this provider."""
         raise NotImplementedError
